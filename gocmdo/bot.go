@@ -1,4 +1,4 @@
-package bot
+package gocmdo
 
 import (
 	"fmt"
@@ -14,12 +14,13 @@ func debug(s string) {
 	fmt.Println("[GOCMDO]", s)
 }
 
-func RegisterHandler(command string, handler func([]string) string) {
+func registerHandler(command string, handler func([]string) string) {
 	handlers[command] = handler
 }
 
 func handleIncoming(message barglebot.Message) {
 	debug("Handling incoming message")
+
 	tokens := strings.Split(message.Text(), " ")
 
 	if handler, ok := handlers[strings.ToLower(tokens[0])]; ok {
@@ -33,6 +34,6 @@ func Run() {
 	incomingCommands := make(chan barglebot.Message)
 	go slack.Connect(os.Getenv("SLACK_BOT_API_KEY"), incomingCommands)
 	for {
-		handleIncoming(<-incomingCommands)
+		go handleIncoming(<-incomingCommands)
 	}
 }

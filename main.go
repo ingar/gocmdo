@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/ingar/gocmdo/bot"
-	_ "github.com/ingar/gocmdo/bot/commands"
+	"github.com/ingar/gocmdo/gocmdo"
 )
 
 func main() {
-	bot.Run()
+	gocmdo.Run()
 }
