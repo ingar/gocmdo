@@ -4,14 +4,18 @@ import (
 	"fmt"
 )
 
+func cmdMove(args []string) string {
+	gameId := args[0]
+	move := args[1]
+
+	game, err := GamesRepository.AddMove(gameId, move)
+
+	if err != nil {
+		return fmt.Sprintf("%v", err)
+	}
+	return fmt.Sprintf("%v", game)
+}
+
 func init() {
-	registerHandler("move", func(args []string) string {
-		gameId := args[0]
-		game := GamesRepository.FindGameById(gameId)
-		if game != nil {
-			game.AddMove(args[1])
-			return fmt.Sprintf("%v", game)
-		}
-		return fmt.Sprintf("Couldn't find game with id: %s", gameId)
-	})
+	registerHandler("move", cmdMove)
 }

@@ -1,6 +1,7 @@
 package gocmdo
 
 import (
+	"errors"
 	"strconv"
 )
 
@@ -12,8 +13,16 @@ type Game struct {
 	Moves       []string
 }
 
-func (self *Game) AddMove(move string) {
-	self.Moves = append(self.Moves, move)
+func (self *Game) AddMove(move string) error {
+	if self.validMove(move) {
+		self.Moves = append(self.Moves, move)
+		return nil
+	}
+	return errors.New("Invalid move")
+}
+
+func (self *Game) validMove(move string) bool {
+	return false
 }
 
 // GamesRepo
@@ -33,19 +42,19 @@ func (self *GamesRepo) AllGames() []*Game {
 	return self.Games
 }
 
-func (self *GamesRepo) AddMove(id string, move string) *Game {
-	g := self.FindGameById(id)
-	if g != nil {
-		g.AddMove(move)
+func (self *GamesRepo) AddMove(id string, move string) (g *Game, err error) {
+	g, err = self.FindGameById(id)
+	if err == nil {
+		err = g.AddMove(move)
 	}
-	return g
+	return
 }
 
-func (self *GamesRepo) FindGameById(id string) *Game {
+func (self *GamesRepo) FindGameById(id string) (*Game, error) {
 	for _, g := range self.Games {
 		if g.id == id {
-			return g
+			return g, nil
 		}
 	}
-	return nil
+	return nil, errors.New("Game not found")
 }

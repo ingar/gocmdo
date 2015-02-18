@@ -8,7 +8,10 @@ import (
 	"strings"
 )
 
-var handlers = map[string]func([]string) string{}
+// A CommandHandler handles incoming bot commands
+type CommandHandler func([]string) string
+
+var handlers = map[string]CommandHandler{}
 
 func debug(s string) {
 	fmt.Println("[GOCMDO]", s)
