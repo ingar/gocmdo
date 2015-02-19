@@ -3,26 +3,51 @@ package gocmdo
 import (
 	"errors"
 	"strconv"
+	"strings"
 )
 
 // Game
+type Coordinates struct {
+	row    int
+	column int
+}
+
 type Game struct {
 	id          string
 	PlayerOneId string
 	PlayerTwoId string
-	Moves       []string
+	Moves       []Coordinates
 }
 
 func (self *Game) AddMove(move string) error {
-	if self.validMove(move) {
-		self.Moves = append(self.Moves, move)
+	if c, err := self.validMove(move); err == nil {
+		self.Moves = append(self.Moves, c)
 		return nil
 	}
 	return errors.New("Invalid move")
 }
 
-func (self *Game) validMove(move string) bool {
-	return false
+func (self *Game) validMove(move string) (c Coordinates, err error) {
+	err = nil
+	tokens := strings.Split(move, ",")
+	c.row, _ = strconv.Atoi(tokens[0])
+	c.column, _ = strconv.Atoi(tokens[1])
+	return
+}
+
+type BoardGrid [19][19]string
+
+func (self *Game) Board() (b BoardGrid) {
+	b = BoardGrid{}
+
+	for idx, move := range self.Moves {
+		s := "W"
+		if idx%2 == 0 {
+			s = "B"
+		}
+		b[move.column][move.row] = s
+	}
+	return
 }
 
 // GamesRepo

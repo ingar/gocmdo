@@ -13,6 +13,8 @@ type CommandHandler func([]string) string
 
 var handlers = map[string]CommandHandler{}
 
+var Users []slack.User
+
 func debug(s string) {
 	fmt.Println("[GOCMDO]", s)
 }
@@ -35,7 +37,7 @@ func handleIncoming(message barglebot.Message) {
 
 func Run() {
 	incomingCommands := make(chan barglebot.Message)
-	go slack.Connect(os.Getenv("SLACK_BOT_API_KEY"), incomingCommands)
+	Users = slack.Connect(os.Getenv("SLACK_BOT_API_KEY"), incomingCommands)
 	for {
 		go handleIncoming(<-incomingCommands)
 	}

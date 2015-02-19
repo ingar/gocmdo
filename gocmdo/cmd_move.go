@@ -13,7 +13,7 @@ func cmdMove(args []string) string {
 	if err != nil {
 		return fmt.Sprintf("%v", err)
 	}
-	return fmt.Sprintf("%v", game)
+	return fmt.Sprintf("%v", game.Board())
 }
 
 func init() {
