@@ -30,23 +30,8 @@ func (self *Game) AddMove(move string) error {
 func (self *Game) validMove(move string) (c Coordinates, err error) {
 	err = nil
 	tokens := strings.Split(move, ",")
-	c.row, _ = strconv.Atoi(tokens[0])
-	c.column, _ = strconv.Atoi(tokens[1])
-	return
-}
-
-type BoardGrid [19][19]string
-
-func (self *Game) Board() (b BoardGrid) {
-	b = BoardGrid{}
-
-	for idx, move := range self.Moves {
-		s := "W"
-		if idx%2 == 0 {
-			s = "B"
-		}
-		b[move.column][move.row] = s
-	}
+	c.column, _ = strconv.Atoi(tokens[0])
+	c.row, _ = strconv.Atoi(tokens[1])
 	return
 }
 
@@ -75,11 +60,21 @@ func (self *GamesRepo) AddMove(id string, move string) (g *Game, err error) {
 	return
 }
 
-func (self *GamesRepo) FindGameById(id string) (*Game, error) {
-	for _, g := range self.Games {
+func (self *GamesRepo) FindGameById(id string) (g *Game, err error) {
+	for _, g = range self.Games {
 		if g.id == id {
-			return g, nil
+			return
 		}
 	}
-	return nil, errors.New("Game not found")
+	err = errors.New("Game not found")
+	return
+}
+
+// debug function to seed a game
+func init() {
+	g := Game{id: "1", PlayerOneId: "ingar", PlayerTwoId: "ingar"}
+	g.AddMove("3,3")
+	g.AddMove("5,2")
+
+	GamesRepository.Games = append(GamesRepository.Games, &g)
 }
