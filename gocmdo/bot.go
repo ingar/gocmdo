@@ -9,7 +9,7 @@ import (
 )
 
 // A CommandHandler handles incoming bot commands
-type CommandHandler func([]string) string
+type CommandHandler func(barglebot.Message) (string, error)
 
 var handlers = map[string]CommandHandler{}
 
@@ -19,17 +19,19 @@ func debug(s string) {
 	fmt.Println("[GOCMDO]", s)
 }
 
-func registerHandler(command string, handler func([]string) string) {
+func registerHandler(command string, handler CommandHandler) {
 	handlers[command] = handler
 }
 
 func handleIncoming(message barglebot.Message) {
-	debug("Handling incoming message")
-
-	tokens := strings.Split(message.Text(), " ")
-
-	if handler, ok := handlers[strings.ToLower(tokens[0])]; ok {
-		message.Respond(handler(tokens[1:]))
+	command := strings.ToLower(message.Tokens()[0])
+	if handler, ok := handlers[command]; ok {
+		response, err := handler(message)
+		if err != nil {
+			message.Respond(err.Error())
+		} else {
+			message.Respond(response)
+		}
 	} else {
 		debug(fmt.Sprintf("Unknown command: %s", message.DebugDump()))
 	}

@@ -1,15 +1,15 @@
 package gocmdo
 
-import ()
+import "github.com/ingar/barglebot"
 
-func cmdShow(args []string) string {
-	g, err := GamesRepository.FindGameById(args[0])
-	if err == nil {
-		return NewBoardGrid(g).Ascii()
+func cmdShow(message barglebot.Message) (resp string, err error) {
+	var game *Game
+	if game, err = GamesRepository.FindGameById(message.Args()[0]); err == nil {
+		resp = game.String()
 	}
-	return err.Error()
+	return
 }
 
 func init() {
-	registerHandler("show", cmdShow)
+	registerHandler("show", CommandHandler(cmdShow))
 }

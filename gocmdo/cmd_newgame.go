@@ -2,28 +2,36 @@ package gocmdo
 
 import (
 	"fmt"
+	"github.com/ingar/barglebot"
+	"errors"
 )
 
-func validUser(name string) (valid bool) {
+func validUser(name string) (err error) {
 	for _, user := range Users {
 		if user.Name == name {
-			valid = true
-			break
+			return
 		}
 	}
+	err = errors.New(fmt.Sprintf("'%s' is an invalid user", name))
 	return
 }
 
-func newgame(args []string) (response string) {
-	if validUser(args[0]) && validUser(args[1]) {
-		game := GamesRepository.NewGame(args[0], args[1])
-		response = fmt.Sprintf("Game created: %v", *game)
+func cmdNewGame(message barglebot.Message) (resp string, err error) {
+	args := message.Args()
+
+	if err = validUser(args[0]); err != nil {
 		return
 	}
-	response = fmt.Sprintf("Invalid user id")
+
+	if err = validUser(args[1]); err != nil {
+		return
+	}
+
+	game := GamesRepository.NewGame(args[0], args[1])
+	resp = fmt.Sprintf("Game created: %v", *game)
 	return
 }
 
 func init() {
-	registerHandler("newgame", newgame)
+	registerHandler("newgame", CommandHandler(cmdNewGame))
 }
