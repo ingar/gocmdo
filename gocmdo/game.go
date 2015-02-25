@@ -1,14 +1,13 @@
 package gocmdo
 
 import (
-	"errors"
-	"strconv"
-	"github.com/ingar/igo"
+	"encoding/json"
 	"fmt"
+	"github.com/ingar/igo"
 )
 
 type Game struct {
-	id string
+	id   string
 	Game *igo.Game
 }
 
@@ -20,7 +19,7 @@ func (self Game) String() (s string) {
 		return err.Error()
 	}
 
-	pointStateToSymbol := map[igo.PointState]string {
+	pointStateToSymbol := map[igo.PointState]string{
 		igo.POINT_STATE_BLACK: "B",
 		igo.POINT_STATE_WHITE: "W",
 		igo.POINT_STATE_BLANK: ".",
@@ -44,40 +43,9 @@ func (self Game) String() (s string) {
 	return
 }
 
-// GamesRepo
-type GamesRepo struct {
-	Games []*Game
-}
-var GamesRepository GamesRepo
-
-func (self *GamesRepo) NewGame(playerOneId string, playerTwoId string) *Game {
-	g := Game{strconv.Itoa(len(self.Games) + 1), &igo.Game{PlayerBlack: playerOneId, PlayerWhite: playerTwoId, BoardSize: 19}}
-	self.Games = append(self.Games, &g)
-	return &g
-}
-
-func (self *GamesRepo) AllGames() []*Game {
-	return self.Games
-}
-
-func (self *GamesRepo) FindGameById(id string) (g *Game, err error) {
-	for _, g = range self.Games {
-		if g.id == id {
-			return
-		}
+func (self Game) Json() (out string) {
+	if bytes, err := json.Marshal(self); err == nil {
+		out = string(bytes)
 	}
-	err = errors.New(fmt.Sprintf("Game %s not found", id))
 	return
-}
-
-// debug function to seed a game
-func init() {
-	g := GamesRepository.NewGame("ingar", "ingar")
-	g.Game.AddMove(igo.Move{igo.MOVE_PLACE, igo.COLOR_BLACK, igo.Coordinates{3, 3}})
-	g.Game.AddMove(igo.Move{igo.MOVE_PLACE, igo.COLOR_WHITE, igo.Coordinates{5, 2}})
-	g.Game.AddMove(igo.Move{igo.MOVE_PLACE, igo.COLOR_BLACK, igo.Coordinates{4, 2}})
-	g.Game.AddMove(igo.Move{igo.MOVE_PLACE, igo.COLOR_WHITE, igo.Coordinates{4, 4}})
-	g.Game.AddMove(igo.Move{igo.MOVE_PLACE, igo.COLOR_BLACK, igo.Coordinates{3, 1}})
-	g.Game.AddMove(igo.Move{igo.MOVE_PLACE, igo.COLOR_WHITE, igo.Coordinates{10, 10}})
-	g.Game.AddMove(igo.Move{igo.MOVE_PLACE, igo.COLOR_BLACK, igo.Coordinates{2, 2}})
 }

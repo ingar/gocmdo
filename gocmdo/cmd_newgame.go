@@ -1,9 +1,9 @@
 package gocmdo
 
 import (
+	"errors"
 	"fmt"
 	"github.com/ingar/barglebot"
-	"errors"
 )
 
 func validUser(name string) (err error) {
@@ -19,12 +19,10 @@ func validUser(name string) (err error) {
 func cmdNewGame(message barglebot.Message) (resp string, err error) {
 	args := message.Args()
 
-	if err = validUser(args[0]); err != nil {
-		return
-	}
-
-	if err = validUser(args[1]); err != nil {
-		return
+	for _, user := range args[:2] {
+		if err = validUser(user); err != nil {
+			return
+		}
 	}
 
 	game := GamesRepository.NewGame(args[0], args[1])

@@ -1,12 +1,12 @@
 package gocmdo
 
 import (
-	"github.com/ingar/barglebot"
-	"strings"
-	"strconv"
-	"fmt"
 	"errors"
+	"fmt"
+	"github.com/ingar/barglebot"
 	"github.com/ingar/igo"
+	"strconv"
+	"strings"
 )
 
 const CMD_MOVE string = "move"
@@ -69,8 +69,11 @@ func cmdMove(message barglebot.Message) (resp string, err error) {
 
 	move := igo.Move{igo.MOVE_PLACE, color, igo.Coordinates{x, y}}
 
-	err = game.Game.AddMove(move)
-	resp = "Move added"
+	if err = game.Game.AddMove(move); err == nil {
+		resp = game.String()
+	}
+
+	err = GamesRepository.Persist(game)
 	return
 }
 
