@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ingar/barglebot"
+	"github.com/ingar/igo"
 )
 
 func validUser(name string) (err error) {
@@ -25,8 +26,12 @@ func cmdNewGame(message barglebot.Message) (resp string, err error) {
 		}
 	}
 
-	game := GamesRepository.NewGame(args[0], args[1])
-	resp = fmt.Sprintf("Game created: %v", *game)
+	game := Game{Game: igo.Game{BoardSize: 19, PlayerWhite: args[0], PlayerBlack: args[1]}}
+	if err = SaveGame(&game); err != nil {
+		return
+	}
+
+	resp = fmt.Sprintf("Game created: %v", game)
 	return
 }
 

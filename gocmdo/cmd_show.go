@@ -4,9 +4,11 @@ import "github.com/ingar/barglebot"
 
 func cmdShow(message barglebot.Message) (resp string, err error) {
 	var game *Game
-	if game, err = GamesRepository.FindGameById(message.Args()[0]); err == nil {
-		resp = game.String()
+	if game, err = LoadGame(message.Args()[0]); err != nil {
+		return
 	}
+
+	resp = game.String()
 	return
 }
 

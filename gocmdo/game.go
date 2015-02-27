@@ -7,8 +7,8 @@ import (
 )
 
 type Game struct {
-	id   string
-	Game *igo.Game
+	Id   string
+	Game igo.Game
 }
 
 func (self Game) String() (s string) {

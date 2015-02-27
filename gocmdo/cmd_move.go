@@ -25,7 +25,7 @@ func cmdMove(message barglebot.Message) (resp string, err error) {
 	gameId, coordinates := args[0], args[1]
 
 	var game *Game
-	if game, err = GamesRepository.FindGameById(gameId); err != nil {
+	if game, err = LoadGame(gameId); err != nil {
 		return
 	}
 
@@ -69,11 +69,15 @@ func cmdMove(message barglebot.Message) (resp string, err error) {
 
 	move := igo.Move{igo.MOVE_PLACE, color, igo.Coordinates{x, y}}
 
-	if err = game.Game.AddMove(move); err == nil {
-		resp = game.String()
+	if err = game.Game.AddMove(move); err != nil {
+		return
 	}
 
-	err = GamesRepository.Persist(game)
+	if err = SaveGame(game); err != nil {
+		return
+	}
+
+	resp = game.String()
 	return
 }
 

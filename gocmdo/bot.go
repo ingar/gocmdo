@@ -28,7 +28,7 @@ func handleIncoming(message barglebot.Message) {
 	if handler, ok := handlers[command]; ok {
 		response, err := handler(message)
 		if err != nil {
-			message.Respond(err.Error())
+			message.Respond(fmt.Sprintf("Error:\n%s", err.Error()))
 		} else {
 			message.Respond(response)
 		}
