@@ -1,6 +1,9 @@
 package gocmdo
 
-import "github.com/ingar/barglebot"
+import (
+	"github.com/ingar/barglebot"
+	"fmt"
+)
 
 func cmdShow(message barglebot.Message) (resp string, err error) {
 	var game *Game
@@ -8,7 +11,14 @@ func cmdShow(message barglebot.Message) (resp string, err error) {
 		return
 	}
 
-	resp = game.String()
+	resp = fmt.Sprintf("%v\n", game.Game)
+
+	var url string
+	if url, err = game.URL(); err != nil {
+		return
+	}
+
+	resp += url
 	return
 }
 

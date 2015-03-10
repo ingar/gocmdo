@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"github.com/ingar/barglebot"
 	"github.com/ingar/igo"
-	"strconv"
-	"strings"
+	"log"
 )
 
 const CMD_MOVE string = "move"
 
 func cmdMoveSyntaxErr() error {
-	return errors.New(fmt.Sprintf("Error parsing move command.  Syntax: %s <gameId> <x>,<y>", CMD_MOVE))
+	return errors.New(fmt.Sprintf("Error parsing move command.  Syntax: %s <gameId> <coordinates>, eg: MOVE 2 Q16", CMD_MOVE))
 }
 
 func cmdMove(message barglebot.Message) (resp string, err error) {
@@ -22,7 +21,7 @@ func cmdMove(message barglebot.Message) (resp string, err error) {
 		return
 	}
 
-	gameId, coordinates := args[0], args[1]
+	gameId, a1coords := args[0], args[1]
 
 	var game *Game
 	if game, err = LoadGame(gameId); err != nil {
@@ -35,20 +34,8 @@ func cmdMove(message barglebot.Message) (resp string, err error) {
 		return
 	}
 
-	tokens := strings.Split(coordinates, ",")
-	if len(tokens) != 2 {
-		err = cmdMoveSyntaxErr()
-		return
-	}
-
-	var x int
-	if x, err = strconv.Atoi(tokens[0]); err != nil {
-		err = cmdMoveSyntaxErr()
-		return
-	}
-
-	var y int
-	if y, err = strconv.Atoi(tokens[1]); err != nil {
+	var coords igo.Coordinates
+	if coords, err = igo.A1toXY(a1coords); err != nil {
 		err = cmdMoveSyntaxErr()
 		return
 	}
@@ -67,7 +54,8 @@ func cmdMove(message barglebot.Message) (resp string, err error) {
 		}
 	}
 
-	move := igo.Move{igo.MOVE_PLACE, color, igo.Coordinates{x, y}}
+	move := igo.Move{igo.MOVE_PLACE, color, coords}
+	log.Println("Adding move", move)
 
 	if err = game.Game.AddMove(move); err != nil {
 		return

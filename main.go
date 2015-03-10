@@ -5,6 +5,7 @@ import (
 )
 
 func main() {
+	go gocmdo.StartGobanServer()
 	gocmdo.Run()
 	/*
 		g, _ := gocmdo.LoadGame("-JizYROIBEPIP6jI7iOR")
